@@ -8,6 +8,8 @@ import { ConnectedCalendarItem } from "../components/ConnectedCalendarItem";
 import { CreateEventsOnCalendarSelect } from "../components/CreateEventsOnCalendarSelect";
 import { StepConnectionLoader } from "../components/StepConnectionLoader";
 
+const WhiteListedCalendarsToConnect = ["google_calendar"];
+
 interface IConnectCalendarsProps {
   nextStep: () => void;
 }
@@ -59,19 +61,25 @@ const ConnectedCalendars = (props: IConnectCalendarsProps) => {
       {/* Connect calendars list */}
       {firstCalendar === undefined && queryIntegrations.data && queryIntegrations.data.items.length > 0 && (
         <List className="bg-default divide-subtle border-subtle mx-1 divide-y rounded-md border p-0 dark:bg-black sm:mx-0">
-          {queryIntegrations.data &&
-            queryIntegrations.data.items.map((item) => (
-              <li key={item.title}>
-                {item.title && item.logo && (
-                  <AppConnectionItem
-                    type={item.type}
-                    title={item.title}
-                    description={item.description}
-                    logo={item.logo}
-                  />
-                )}
-              </li>
-            ))}
+          {
+            // ICSD CUSTOM: filter out integrations that are not in the whitelist
+            queryIntegrations.data && queryIntegrations.data.items
+              .filter((item) => {
+                return WhiteListedCalendarsToConnect.includes(item.type);
+              })
+              .map((item) => (
+                <li key={item.title}>
+                  {item.title && item.logo && (
+                    <AppConnectionItem
+                      type={item.type}
+                      title={item.title}
+                      description={item.description}
+                      logo={item.logo}
+                    />
+                  )}
+                </li>
+              )
+            )}
         </List>
       )}
 
